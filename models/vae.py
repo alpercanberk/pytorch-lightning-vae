@@ -27,9 +27,9 @@ class VAE(pl.LightningModule):
     def __init__(self,
                  enc_out_dim:int, 
                  latent_dim:int,
-                 height:int,
-                 width:int,
-                 channels:int,
+                 input_height:int,
+                 input_width:int,
+                 input_channels:int,
                  lr: float,
                  batch_size: int,
                  save_path: Optional[str] = None, **kwargs):
@@ -52,7 +52,7 @@ class VAE(pl.LightningModule):
 
         self.encoder = nn.Sequential(
             nn.Flatten(),
-            nn.Linear(channels*height*width, 392), nn.BatchNorm1d(392), nn.LeakyReLU(0.1),
+            nn.Linear(input_channels*input_height*input_width, 392), nn.BatchNorm1d(392), nn.LeakyReLU(0.1),
             nn.Linear(392, 196), nn.BatchNorm1d(196), nn.LeakyReLU(0.1),
             nn.Linear(196, 128), nn.BatchNorm1d(128), nn.LeakyReLU(0.1),
             nn.Linear(128, enc_out_dim)
@@ -61,8 +61,8 @@ class VAE(pl.LightningModule):
             nn.Linear(latent_dim, 128), nn.BatchNorm1d(128), nn.LeakyReLU(0.1),
             nn.Linear(128, 196), nn.BatchNorm1d(196), nn.LeakyReLU(0.1),
             nn.Linear(196, 392), nn.BatchNorm1d(392), nn.LeakyReLU(0.1),
-            nn.Linear(392, channels*height*width),
-            Stack(channels, height, width),
+            nn.Linear(392, input_channels*input_height*input_width),
+            Stack(input_channels, input_height, input_width),
             nn.Tanh()
         )
 

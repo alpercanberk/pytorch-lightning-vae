@@ -17,16 +17,6 @@ class VAEConfig(BaseModel):
     batch_size: Optional[int] = 64
     lr: Optional[float] = None
     save_path: Optional[str] = None
-    height: int
-    width: int
-    channels:int
-
-
-class ConvVAEConfig(VAEConfig):
-    channels: int
-    height: int
-    width: int
-
 
 class LoggerConfig(BaseModel):
     name: str
@@ -34,7 +24,7 @@ class LoggerConfig(BaseModel):
 
 
 class Config(BaseModel):
-    model_config: Union[VAEConfig, ConvVAEConfig]
+    model_config: Union[VAEConfig]
     train_config: TrainConfig
     model_type: str
     log_config: LoggerConfig
@@ -43,10 +33,8 @@ class Config(BaseModel):
 def load_config(path="config.yaml"):
     config = yaml.load(open(path), yaml.SafeLoader)
     model_type = config['model_params']['model_type']
-    if model_type == "vae":
+    if model_type == "conv-vae" or model_type == "resnet18-vae" or model_type=="vae":
         model_config = VAEConfig(**config["model_params"])
-    elif model_type == "conv-vae" or model_type == "resnet18-vae":
-        model_config = ConvVAEConfig(**config["model_params"])
     else:
         raise NotImplementedError(f"Model {model_type} is not implemented")
     train_config = TrainConfig(**config["training_params"])

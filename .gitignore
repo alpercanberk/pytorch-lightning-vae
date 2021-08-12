@@ -7,4 +7,5 @@ lightning_logs/
 log_images/
 logs/
 venv/
+saved_models/
 *.env

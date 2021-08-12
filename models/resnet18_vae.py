@@ -24,14 +24,14 @@ class Resnet18_VAE(VAE):
     def __init__(self,
                  enc_out_dim:int, 
                  latent_dim:int,
-                 height:int,
-                 width:int,
-                 channels:int,
+                 input_height:int,
+                 input_width:int,
+                 input_channels:int,
                  lr: float,
                  batch_size: int,
                  save_path: Optional[str] = None, **kwargs):
 
-        super().__init__(enc_out_dim, latent_dim, height, width, channels, lr, batch_size, save_path, **kwargs)
+        super().__init__(enc_out_dim, latent_dim, input_height, input_width, input_channels, lr, batch_size, save_path, **kwargs)
      
         self.latent_dim = latent_dim
 
@@ -41,7 +41,7 @@ class Resnet18_VAE(VAE):
 
         self.batch_size = batch_size
 
-        assert height == width
+        assert input_height == input_width
         self.encoder = resnet18_encoder(first_conv=False, maxpool1=False)
         self.decoder = resnet18_decoder(latent_dim=latent_dim, input_height=height, first_conv=False, maxpool1=False)
 

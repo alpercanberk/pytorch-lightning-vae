@@ -3,15 +3,12 @@ training_params:
   auto_lr_find: true
   gpus: 0 #default value, can be changed with command line parameters
 model_params:
-  model_type: resnet18-vae 
+  model_type: vae 
   lr: 0.005
   batch_size: 32
   enc_out_dim: 512  #512 for resnet 18
   latent_dim: 128
   dataset: "mnist" #default value, can be changed with command line parameters
-  channels: 1
-  height: 32
-  width: 32
 logger_params:
   name: "vae"
   save_dir: "logs/"

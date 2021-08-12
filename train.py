@@ -9,7 +9,7 @@ from argparse import ArgumentParser
 from image_log_callback import ImageSampler
 from pl_bolts.datamodules import CIFAR10DataModule, ImagenetDataModule, MNISTDataModule, FashionMNISTDataModule
 
-def make_model(config):
+def make_model(config, input_shape):
 
     model_type = config.model_type
     model_config = config.model_config
@@ -17,7 +17,7 @@ def make_model(config):
     if model_type not in vae_models.keys():
         raise NotImplementedError("Model Architecture not implemented")
     else:
-        return vae_models[model_type](**model_config.dict())
+        return vae_models[model_type](**model_config.dict(), **input_shape)
 
 
 if __name__ == "__main__":
@@ -50,9 +50,9 @@ if __name__ == "__main__":
     print("Images from this dataset have dimension", dataset.dims)
     print(">>>>>>")
 
-    config.model_config.channels, config.model_config.height, config.model_config.width = dataset.dims
+    input_shape = {'input_channels':dataset.dims[0], 'input_width':dataset.dims[1], 'input_height':dataset.dims[2]}
 
-    model = make_model(config)
+    model = make_model(config, input_shape)
 
     train_config = config.train_config
     logger = TensorBoardLogger(**config.log_config.dict())
