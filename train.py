@@ -70,9 +70,8 @@ if __name__ == "__main__":
 
     if not os.path.isdir("./saved_models"):
         os.mkdir("./saved_models")
-    # trainer.save_checkpoint(
-    #     f"saved_models/{config.model_type}_latent_{config.model_config.latent_dim}.ckpt")
+
     trainer.save_checkpoint(
-        f"_latent_{config.model_config.latent_dim}.ckpt")
+        f"saved_models/{config.model_type}_latent_{config.model_config.latent_dim}.ckpt")
 
 
