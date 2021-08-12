@@ -1,0 +1,10 @@
+medium/
+data/
+.vscode/
+__pycache__/
+.ipynb_checkpoints/
+lightning_logs/
+log_images/
+logs/
+venv/
+*.env
