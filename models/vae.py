@@ -145,8 +145,8 @@ class VAE(pl.LightningModule):
                  on_epoch=True, prog_bar=True)
 
 
-        train_images = make_grid(x[:16]).cpu().numpy()
-        self.logger.experiment.add_image('Normalized Train Images', torch.tensor(train_images))
+        # train_images = make_grid(x[:16]).cpu().numpy()
+        # self.logger.experiment.add_image('Normalized Train Images', torch.tensor(train_images))
 
         return elbo
 
