@@ -8,7 +8,7 @@ model_params:
   batch_size: 32
   enc_out_dim: 512  #512 for resnet 18
   latent_dim: 128
-  dataset: "mnist" #default value, can be changed with command line parameters
+  dataset: "cifar10" #default value, can be changed with command line parameters
 logger_params:
   name: "vae"
   save_dir: "logs/"

@@ -64,12 +64,15 @@ if __name__ == "__main__":
     train_config.gpus = args.gpus
     trainer = Trainer(**train_config.dict(), logger=logger,
                       callbacks=[lr_logger, image_sampler])
-
     
 
     trainer.fit(model, dataset)
 
     if not os.path.isdir("./saved_models"):
         os.mkdir("./saved_models")
+    # trainer.save_checkpoint(
+    #     f"saved_models/{config.model_type}_latent_{config.model_config.latent_dim}.ckpt")
     trainer.save_checkpoint(
-        f"saved_models/{config.model_type}_latent_{config.model_config.latent_dim}.ckpt")
+        f"_latent_{config.model_config.latent_dim}.ckpt")
+
+
