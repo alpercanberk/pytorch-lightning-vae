@@ -43,7 +43,7 @@ class Resnet18_VAE(VAE):
 
         assert input_height == input_width
         self.encoder = resnet18_encoder(first_conv=False, maxpool1=False)
-        self.decoder = resnet18_decoder(latent_dim=latent_dim, input_height=height, first_conv=False, maxpool1=False)
+        self.decoder = resnet18_decoder(latent_dim=latent_dim, input_height=input_height, first_conv=False, maxpool1=False)
 
         self.hidden2mu = nn.Linear(enc_out_dim, latent_dim)
         self.hidden2log_var = nn.Linear(enc_out_dim, latent_dim)

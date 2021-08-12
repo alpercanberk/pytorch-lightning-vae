@@ -3,7 +3,7 @@ training_params:
   auto_lr_find: true
   gpus: 0 #default value, can be changed with command line parameters
 model_params:
-  model_type: vae 
+  model_type: resnet18-vae 
   lr: 0.005
   batch_size: 32
   enc_out_dim: 512  #512 for resnet 18
