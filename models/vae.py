@@ -25,7 +25,6 @@ class Stack(nn.Module):
 
 class VAE(pl.LightningModule):
     def __init__(self,
-                 enc_out_dim:int, 
                  latent_dim:int,
                  input_height:int,
                  input_width:int,
@@ -46,16 +45,19 @@ class VAE(pl.LightningModule):
         self.latent_dim = latent_dim
 
         self.save_hyperparameters()
+
         self.lr = lr
 
         self.batch_size = batch_size
+
+        ENC_OUT_DIM = 128
 
         self.encoder = nn.Sequential(
             nn.Flatten(),
             nn.Linear(input_channels*input_height*input_width, 392), nn.BatchNorm1d(392), nn.LeakyReLU(0.1),
             nn.Linear(392, 196), nn.BatchNorm1d(196), nn.LeakyReLU(0.1),
             nn.Linear(196, 128), nn.BatchNorm1d(128), nn.LeakyReLU(0.1),
-            nn.Linear(128, enc_out_dim)
+            nn.Linear(128, ENC_OUT_DIM)
         )
         self.decoder = nn.Sequential(
             nn.Linear(latent_dim, 128), nn.BatchNorm1d(128), nn.LeakyReLU(0.1),
@@ -66,8 +68,8 @@ class VAE(pl.LightningModule):
             nn.Tanh()
         )
 
-        self.hidden2mu = nn.Linear(enc_out_dim, latent_dim)
-        self.hidden2log_var = nn.Linear(enc_out_dim, latent_dim)
+        self.hidden2mu = nn.Linear(ENC_OUT_DIM, latent_dim)
+        self.hidden2log_var = nn.Linear(ENC_OUT_DIM, latent_dim)
 
         self.log_scale = nn.Parameter(torch.Tensor([0.0]))
 
@@ -149,6 +151,11 @@ class VAE(pl.LightningModule):
         # self.logger.experiment.add_image('Normalized Train Images', torch.tensor(train_images))
 
         return elbo
+
+    def training_epoch_end(self, outputs):
+        #Pytorch lightning has a bug, this is a temporary fix
+        # return {"val_loss": 1}
+        self.log('val_loss', 1)
 
     def validation_step(self, batch, batch_idx):
 

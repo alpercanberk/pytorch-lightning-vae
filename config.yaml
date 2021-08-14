@@ -1,14 +1,13 @@
 training_params:
   max_epochs: 10
   auto_lr_find: true
-  gpus: 0 #default value, can be changed with command line parameters
+  gpus: 0  #default value, can be changed with command line parameters: "--gpu 2"
 model_params:
-  model_type: resnet18-vae 
-  lr: 0.005
+  model_type: vae
+  lr: 0.01
   batch_size: 32
-  enc_out_dim: 512  #512 for resnet 18
-  latent_dim: 128
-  dataset: "cifar10" #default value, can be changed with command line parameters
+  latent_dim: 128 
+  dataset: "mnist" #default value, can be changed with command line parameters
 logger_params:
   name: "vae"
   save_dir: "logs/"

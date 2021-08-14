@@ -8,25 +8,20 @@ class TrainConfig(BaseModel):
     auto_lr_find: Union[bool, int]
     gpus: int
 
-
 class VAEConfig(BaseModel):
     model_type: str
-    enc_out_dim: int
     latent_dim:int
     dataset: str
-    batch_size: Optional[int] = 64
-    lr: Optional[float] = None
-    save_path: Optional[str] = None
-
+    batch_size: int
+    lr: float
+    
 class LoggerConfig(BaseModel):
     name: str
     save_dir: str
 
-
 class Config(BaseModel):
     model_config: Union[VAEConfig]
     train_config: TrainConfig
-    model_type: str
     log_config: LoggerConfig
 
 
@@ -40,7 +35,7 @@ def load_config(path="config.yaml"):
     train_config = TrainConfig(**config["training_params"])
     log_config = LoggerConfig(**config["logger_params"])
     config = Config(model_config=model_config, train_config=train_config,
-                    model_type=model_type, log_config=log_config)
+                   log_config=log_config)
 
     return config
 

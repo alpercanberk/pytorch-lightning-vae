@@ -11,7 +11,7 @@ from pl_bolts.datamodules import CIFAR10DataModule, ImagenetDataModule, MNISTDat
 
 def make_model(config, input_shape):
 
-    model_type = config.model_type
+    model_type = config.model_config.model_type
     model_config = config.model_config
 
     if model_type not in vae_models.keys():
@@ -22,20 +22,31 @@ def make_model(config, input_shape):
 
 if __name__ == "__main__":
 
-
     parser = ArgumentParser()
-    parser.add_argument('--gpus', type=int, default=config.train_config.gpus)
-    parser.add_argument('--dataset', type=str, default=config.model_config.dataset)
-    args = parser.parse_args()
+
+    config_dict = config.dict()
+
+    #Assuming no NoneTypes in config.yaml, this part creates
+    #optional command arguments for every config parameter
+    for config_key, config_value in config_dict.items():
+        for key, value in config_value.items():
+            parser.add_argument(f'--{key}', type=type(value), default=value)
+
+    parser_args = parser.parse_args()
+
+    for config_key, config_value in config_dict.items():
+        for key, value in config_value.items():
+            config.__dict__[config_key].__dict__[key] = parser_args.__dict__[key] 
+
 
     dataset_config = {
         'data_dir':'./data',
         'normalize': True,
-        'num_workers':12,
+        'num_workers':12, #Feel free to chnage this value
         'batch_size':config.model_config.batch_size
     }
 
-    dataset_name = args.dataset
+    dataset_name = config.model_config.dataset
     if(dataset_name == 'mnist'):
         dataset = MNISTDataModule(**dataset_config)
     if(dataset_name == 'fashion_mnist'):
@@ -54,19 +65,27 @@ if __name__ == "__main__":
 
     model = make_model(config, input_shape)
 
-    train_config = config.train_config
     logger = TensorBoardLogger(**config.log_config.dict())
 
 
     image_sampler = ImageSampler(dataset=dataset_name)
     lr_logger = LearningRateMonitor(logging_interval='epoch')
 
-    train_config.gpus = args.gpus
-    trainer = Trainer(**train_config.dict(), logger=logger,
+    trainer = Trainer(**config.train_config.dict(), logger=logger,
                       callbacks=[lr_logger, image_sampler])
-    
+
+    if config.train_config.auto_lr_find:
+
+        lr_finder = trainer.tuner.lr_find(model, dataset)
+        new_lr = lr_finder.suggestion()
+        print(">>>>>>>>>")
+        print("Learning Rate Chosen:", new_lr)
+        print(">>>>>>>>>")
+        model.lr = new_lr  
+ 
 
     trainer.fit(model, dataset)
+
 
     if not os.path.isdir("./saved_models"):
         os.mkdir("./saved_models")

@@ -22,7 +22,6 @@ from .vae import VAE
 
 class Resnet18_VAE(VAE):
     def __init__(self,
-                 enc_out_dim:int, 
                  latent_dim:int,
                  input_height:int,
                  input_width:int,
@@ -31,7 +30,7 @@ class Resnet18_VAE(VAE):
                  batch_size: int,
                  save_path: Optional[str] = None, **kwargs):
 
-        super().__init__(enc_out_dim, latent_dim, input_height, input_width, input_channels, lr, batch_size, save_path, **kwargs)
+        super().__init__(latent_dim, input_height, input_width, input_channels, lr, batch_size, save_path, **kwargs)
      
         self.latent_dim = latent_dim
 
@@ -40,12 +39,15 @@ class Resnet18_VAE(VAE):
         self.lr = lr
 
         self.batch_size = batch_size
-
+ 
         assert input_height == input_width
         self.encoder = resnet18_encoder(first_conv=False, maxpool1=False)
         self.decoder = resnet18_decoder(latent_dim=latent_dim, input_height=input_height, first_conv=False, maxpool1=False)
 
-        self.hidden2mu = nn.Linear(enc_out_dim, latent_dim)
-        self.hidden2log_var = nn.Linear(enc_out_dim, latent_dim)
+
+        ENC_OUT_DIM = 512 #specific to resnet-18
+
+        self.hidden2mu = nn.Linear(ENC_OUT_DIM, latent_dim)
+        self.hidden2log_var = nn.Linear(ENC_OUT_DIM, latent_dim)
 
         self.log_scale = nn.Parameter(torch.Tensor([0.0]))
