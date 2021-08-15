@@ -1,33 +1,18 @@
 from matplotlib.pyplot import imshow, figure
 import numpy as np
 from torchvision.utils import make_grid
-from pl_bolts.transforms.dataset_normalizations import cifar10_normalization, imagenet_normalization
 import pytorch_lightning as pl
 import torch
 from collections import namedtuple
 
 
-custom_normalization = namedtuple('custom_normalization', ['mean', 'std'])
-
-def binary_normalization():
-    normalization = custom_normalization(mean=[.5], std=[.5])
-    return normalization
-
 class ImageSampler(pl.Callback):
-    def __init__(self, dataset):
+    def __init__(self, normalization):
         super().__init__()
 
         self.img_size = None
         self.num_preds = 16
-        self.normalization = None        
-
-        if(dataset == 'mnist' or dataset == 'fashion_mnist'):
-            self.normalization = binary_normalization()
-        elif(dataset == 'cifar10'):
-            self.normalization = cifar10_normalization()
-        elif(dataset == 'imagenet'):
-            self.normalization = imagenet_normalization()
-
+        self.normalization = normalization       
 
     def on_train_epoch_end(self, trainer, pl_module):
         figure(figsize=(8, 3), dpi=300)

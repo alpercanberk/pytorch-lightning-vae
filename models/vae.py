@@ -11,6 +11,9 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 import os
 from typing import Optional
+from collections import namedtuple
+
+CustomTransform = namedtuple("CustomTransform", ["custom_resize", "custom_normalize"])
 
 class Stack(nn.Module):
     def __init__(self, channels, height, width):
@@ -73,6 +76,7 @@ class VAE(pl.LightningModule):
 
         self.log_scale = nn.Parameter(torch.Tensor([0.0]))
 
+
     def encode(self, x):
         hidden = self.encoder(x)
         mu = self.hidden2mu(hidden)
@@ -83,6 +87,13 @@ class VAE(pl.LightningModule):
         x = self.decoder(x)
         return x
 
+    def reparametrize(self, mu, log_var):
+        # Reparametrization Trick to allow gradients to backpropagate from the
+        # stochastic part of the model
+        sigma = torch.exp(0.5*log_var)
+        z = torch.randn_like(sigma)
+        return mu + sigma*z
+
     def gaussian_likelihood(self, x_hat, logscale, x):
         scale = torch.exp(logscale)
         mean = x_hat
@@ -90,6 +101,7 @@ class VAE(pl.LightningModule):
 
         # measure prob of seeing image under p(x|z)
         log_pxz = dist.log_prob(x)
+
         return log_pxz.sum(dim=(1, 2, 3))
 
     def kl_divergence(self, z, mu, std):
@@ -131,7 +143,6 @@ class VAE(pl.LightningModule):
         mu, std, z, x_hat = self.forward(x)
 
         # reconstruction loss
-        # recon_loss = self.gaussian_likelihood(x_hat, self.log_scale, x)
         recon_loss = self.gaussian_likelihood(x_hat, self.log_scale, x)
 
         #expectation under z of the kl divergence between q(z|x) and
@@ -142,20 +153,15 @@ class VAE(pl.LightningModule):
         elbo = (kl - recon_loss)
         elbo = elbo.mean()
 
-
-        self.log('train_loss', elbo, on_step=False,
+        self.log('train_kl_loss', kl.mean(), on_step=True,
+                 on_epoch=True, prog_bar=False)
+        self.log('train_recon_loss', recon_loss.mean(), on_step=True,
+                 on_epoch=True, prog_bar=False)
+        self.log('train_loss', elbo, on_step=True,
                  on_epoch=True, prog_bar=True)
 
-
         # train_images = make_grid(x[:16]).cpu().numpy()
-        # self.logger.experiment.add_image('Normalized Train Images', torch.tensor(train_images))
-
         return elbo
-
-    def training_epoch_end(self, outputs):
-        #Pytorch lightning has a bug, this is a temporary fix
-        # return {"val_loss": 1}
-        self.log('val_loss', 1)
 
     def validation_step(self, batch, batch_idx):
 
@@ -171,12 +177,15 @@ class VAE(pl.LightningModule):
         kl = self.kl_divergence(z, mu, std)
 
         # elbo
-        elbo = (kl - recon_loss)
+        elbo = kl - recon_loss
         elbo = elbo.mean()
 
-        self.log('val_kl_loss', kl, on_step=False, on_epoch=True)
-        self.log('val_recon_loss', recon_loss, on_step=False, on_epoch=True)
+        self.log('val_kl_loss', kl.mean(), on_step=False, on_epoch=True)
+        self.log('val_recon_loss', recon_loss.mean(), on_step=False, on_epoch=True)
         self.log('val_loss', elbo, on_step=False, on_epoch=True)
+
+        self.logger.experiment.add_image('Normalized Inputs', make_grid(x[:8]))
+
 
         return x_hat, elbo
 
@@ -187,7 +196,6 @@ class VAE(pl.LightningModule):
             "optimizer": optimizer, "lr_scheduler": lr_scheduler,
             "monitor": "val_loss"
         }
-
 
     def interpolate(self, x1, x2):
         assert x1.shape == x2.shape, "Inputs must be of the same shape"
@@ -212,3 +220,8 @@ class VAE(pl.LightningModule):
         intermediate.append(self.decode(z2))
         out = torch.stack(intermediate, dim=0).squeeze(1)
         return out, (mu1, lv1), (mu2, lv2)
+
+    @staticmethod
+    def custom_transform(normalization):
+        return None, None
+

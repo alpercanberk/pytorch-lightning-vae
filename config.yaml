@@ -1,13 +1,13 @@
 training_params:
   max_epochs: 10
-  auto_lr_find: true
+  auto_lr_find: false
   gpus: 0  #default value, can be changed with command line parameters: "--gpu 2"
 model_params:
-  model_type: vae
+  model_type: conv-vae
   lr: 0.01
   batch_size: 32
-  latent_dim: 128 
-  dataset: "mnist" #default value, can be changed with command line parameters
+  latent_dim: 1024 
+  dataset: "cifar10" #default value, can be changed with command line parameters
 logger_params:
   name: "vae"
   save_dir: "logs/"
