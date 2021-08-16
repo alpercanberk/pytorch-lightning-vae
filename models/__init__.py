@@ -12,6 +12,6 @@ __all__ = [
 vae_models = {
     "vae": VAE,
     'resnet18-vae': Resnet18_VAE,
-    'conv-vae': Convolutional_VAE
+    'conv-vae': Convolutional_VAE,
     'perceptual-vae': Perceptual_VAE
 }
