@@ -139,11 +139,6 @@ class VAE(pl.LightningModule):
 
         x, _ = batch
 
-        print(">>>>")
-        print(torch.max(x))
-        print(torch.min(x))
-        print(">>>>")
-
         mu, std, z, x_hat = self.forward(x)
 
         # reconstruction loss
