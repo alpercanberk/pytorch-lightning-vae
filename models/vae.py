@@ -2,7 +2,6 @@ import torch
 import torch.nn as nn
 import pytorch_lightning as pl
 import random
-from torchvision.datasets import MNIST, FashionMNIST
 import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
 from torchvision.utils import save_image, make_grid
@@ -67,8 +66,8 @@ class VAE(pl.LightningModule):
             nn.Linear(128, 196), nn.BatchNorm1d(196), nn.LeakyReLU(0.1),
             nn.Linear(196, 392), nn.BatchNorm1d(392), nn.LeakyReLU(0.1),
             nn.Linear(392, input_channels*input_height*input_width),
+            nn.Sigmoid(),
             Stack(input_channels, input_height, input_width),
-            nn.Tanh()
         )
 
         self.hidden2mu = nn.Linear(ENC_OUT_DIM, latent_dim)
@@ -139,6 +138,11 @@ class VAE(pl.LightningModule):
     def training_step(self, batch, batch_idx):
 
         x, _ = batch
+
+        print(">>>>")
+        print(torch.max(x))
+        print(torch.min(x))
+        print(">>>>")
 
         mu, std, z, x_hat = self.forward(x)
 

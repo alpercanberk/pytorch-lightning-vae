@@ -2,7 +2,6 @@ import torch
 import torch.nn as nn
 import pytorch_lightning as pl
 import random
-from torchvision.datasets import MNIST, FashionMNIST
 import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
 from torchvision.utils import save_image, make_grid
