@@ -34,7 +34,6 @@ class Resnet18_VAE(VAE):
      
         self.latent_dim = latent_dim
 
-
         self.save_hyperparameters()
         self.lr = lr
 
