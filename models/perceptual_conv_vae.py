@@ -35,4 +35,4 @@ class Perceptual_VAE(Convolutional_VAE):
 		# measure prob of seeing image under p(x|z)
 		log_pxz = dist.log_prob(x)
 
-		return log_pxz.sum(dim=(1, 2, 3))
+		return log_pxz.sum()
