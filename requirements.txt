@@ -59,6 +59,7 @@ tensorboard-data-server==0.6.1
 tensorboard-plugin-wit==1.8.0
 threadpoolctl==2.2.0
 torch==1.7.1
+torchtext==0.8
 torchmetrics==0.5.0
 torchvision==0.8.2
 tqdm==4.62.0
