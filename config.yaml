@@ -3,7 +3,7 @@ training_params:
   auto_lr_find: false
   gpus: 0  #default value, can be changed with command line parameters: "--gpu 2"
 model_params:
-  model_type: conv-vae
+  model_type: resnet18-vae
   lr: 0.01
   batch_size: 32
   latent_dim: 1024 
