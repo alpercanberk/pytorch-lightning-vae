@@ -16,7 +16,9 @@ class ImageSampler(pl.Callback):
 
     def on_train_batch_end(self, trainer, pl_module, outputs, batch, batch_idx, dataloader_idx, *args, **kwargs):
         
-        if(batch_idx % 5 == 0):
+        INTERVAL = 50
+        
+        if(batch_idx % INTERVAL == 0):
             # Z COMES FROM NORMAL(0, 1)
             rand_v = torch.rand((self.num_preds, pl_module.hparams.latent_dim), device=pl_module.device)
             
