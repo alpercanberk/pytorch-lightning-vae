@@ -6,6 +6,7 @@ So far it contains:
 - Plain MLP VAE
 - Custom Convolutional Encoder/Decoder VAE
 - Resnet 18 Encoder/Decoder VAE
+- VAE With Perceptual Loss
 
 Basic parts of this implementation are inspired by the following articles:
 https://towardsdatascience.com/variational-autoencoder-demystified-with-pytorch-implementation-3a06bee395ed
